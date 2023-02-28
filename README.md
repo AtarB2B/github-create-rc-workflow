@@ -1,1 +1,1 @@
-# github-build-deploy-atar-workflow
+# github-create-rc-workflow
