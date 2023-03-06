@@ -19,6 +19,7 @@ runs:
       run: |
         git checkout -b "rc/${{ inputs.tag }}"
         git push --set-upstream origin "rc/${{ inputs.tag }}"
+    
     - name: Send Message to Slack
       uses: 8398a7/action-slack@v3
       with:
