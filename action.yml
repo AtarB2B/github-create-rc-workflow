@@ -29,7 +29,7 @@ runs:
           git rev-parse --short "$1" || true
         }
         
-        current_release_candidate=$(git branch -a | grep -v remotes | grep rc | head -n 1)
+        current_release_candidate=(`git branch -a | grep -v remotes | grep rc | head -n 1`)
         current_release_candidate_hash=$(get_hash $current_release_candidate)
         current_branch=$(git symbolic-ref --short HEAD)
 
