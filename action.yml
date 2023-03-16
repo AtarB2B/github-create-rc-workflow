@@ -29,8 +29,8 @@ runs:
           git rev-parse --short "$1" || true
         }
 
-        fc_branch_hash=$(get_hash "$fc_branch")
-        rc_branch_hash=$(get_hash "rc/${{ inputs.tag }}")
+        fc_branch_hash=$(get_hash "origin/$fc_branch")
+        rc_branch_hash=$(get_hash "origin/rc/${{ inputs.tag }}")
 
         if [ "$fc_branch_hash" = "$rc_branch_hash" ]; then
           echo "can't merge. fc branch is equal to the rc branch."
@@ -41,15 +41,15 @@ runs:
         
           echo "rc branch not found."
           
-          git checkout -b "rc/${{ inputs.tag }}"
+          git checkout -b "origin/rc/${{ inputs.tag }}"
           git push --set-upstream origin "rc/${{ inputs.tag }}"
         
         else
           
           echo "rc/${{ inputs.tag }} alredy exists, go to merge."
           
-          git checkout --quiet "$fc_branch_hash"
-          git merge "rc/${{ inputs.tag }}" -m "Merge Commit Auto." || true
+          git checkout --quiet "origin/$fc_branch_hash"
+          git merge "origin/rc/${{ inputs.tag }}" -m "Merge Commit Auto." || true
           git push --set-upstream origin "rc/${{ inputs.tag }}"
         
         fi
