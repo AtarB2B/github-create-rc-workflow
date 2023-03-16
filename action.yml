@@ -26,12 +26,16 @@ runs:
         git fetch --all
 
         get_hash() {
-          git rev-parse --short "$1" || true
+          git rev-parse --short origin/"$1" || true
         }
         
-        current_release_candidate=(`git branch -a | grep -v remotes | grep rc | head -n 1`)
-        current_release_candidate_hash=$(get_hash $current_release_candidate)
-        current_branch=$(git symbolic-ref --short HEAD)
+        # current_release_candidate=(`git branch -a | grep -v remotes | grep rc | head -n 1`)
+        # current_release_candidate_hash=$(get_hash $current_release_candidate)
+        # current_branch=$(git symbolic-ref --short HEAD)
+        
+        current_branch=main
+        current_release_candidate="rc/1679005369"
+        current_release_candidate_hash="687fc34"
 
         if [ -z "$current_release_candidate_hash" ]; then
         
