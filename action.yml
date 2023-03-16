@@ -33,7 +33,7 @@ runs:
         # current_release_candidate_hash=$(get_hash $current_release_candidate)
         # current_branch=$(git symbolic-ref --short HEAD)
         
-        current_branch=main
+        current_branch=test
         current_release_candidate="rc/1679005369"
         current_release_candidate_hash="687fc34"
 
