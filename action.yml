@@ -51,7 +51,7 @@ runs:
           git merge --allow-unrelated-histories --no-edit origin/$current_branch -m "merge commit auto." || true
           git push --set-upstream origin $current_release_candidate
 
-          echo "merge into rc/$current_release_candidate success."
+          echo "merge into $current_release_candidate success."
 
         fi
       shell: bash
