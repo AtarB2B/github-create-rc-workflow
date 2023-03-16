@@ -30,7 +30,7 @@ runs:
         }
 
         fc_branch_hash=$(get_hash "origin/$fc_branch")
-        rc_branch_hash=$(get_hash "origin/rc/v${{ inputs.tag }}")
+        rc_branch_hash=$(get_hash "origin/rc/${{ inputs.tag }}")
 
         if [ "$fc_branch_hash" = "$rc_branch_hash" ]; then
           echo "can't merge. fc branch is equal to the rc branch."
@@ -41,16 +41,16 @@ runs:
         
           echo "rc branch not found."
           
-          git checkout -b "origin/rc/v${{ inputs.tag }}"
-          git push --set-upstream origin "rc/v${{ inputs.tag }}"
+          git checkout -b "origin/rc/${{ inputs.tag }}"
+          git push --set-upstream origin "rc/${{ inputs.tag }}"
         
         else
           
-          echo "rc/v${{ inputs.tag }} alredy exists, go to merge."
+          echo "rc/${{ inputs.tag }} alredy exists, go to merge."
           
           git checkout --quiet "origin/$fc_branch_hash"
-          git merge "origin/rc/v${{ inputs.tag }}" -m "Merge Commit Auto." || true
-          git push --set-upstream origin "rc/v${{ inputs.tag }}"
+          git merge "origin/rc/${{ inputs.tag }}" -m "Merge Commit Auto." || true
+          git push --set-upstream origin "rc/${{ inputs.tag }}"
         
         fi
       shell: bash
@@ -59,7 +59,7 @@ runs:
       uses: 8398a7/action-slack@v3
       with:
         status: ${{job.status}}
-        username: "CREATE_RC|${{github.event.repository.name}}|rc/v${{ inputs.tag }}"
+        username: "CREATE_RC|${{github.event.repository.name}}|rc/${{ inputs.tag }}"
         author_name: ${{github.workflow}}
         fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest
       if: always()
