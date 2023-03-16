@@ -33,7 +33,7 @@ runs:
         rc_branch_hash=$(get_hash "rc/${{ inputs.tag }}")
 
         if [ "$fc_branch_hash" = "$rc_branch_hash" ]; then
-          echo "Can't merge. fc branch is equal to the rc branch."
+          echo "can't merge. fc branch is equal to the rc branch."
           exit 1
         fi
 
