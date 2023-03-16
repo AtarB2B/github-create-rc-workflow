@@ -17,6 +17,14 @@ runs:
       run: |
         #!/usr/bin/env bash
 
+        echo "start ........................."
+        echo "start ........................."
+        echo "start ........................."
+        echo "start ........................."
+        echo "start ........................."
+        echo "start ........................."
+        echo "start ........................."
+
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
         git fetch --all
@@ -26,10 +34,8 @@ runs:
         }
         
         current_release_candidate=$(git branch -a | grep -v remotes | grep rc | head -n 1)
-        current_release_candidate_hash=$(get_hash $current_release_candidate)
-
-        fc_branch=$(git symbolic-ref --short HEAD)
-        fc_branch_hash=$(get_hash "origin/$fc_branch")
+        current_release_candidate_hash=$(get_hash origin/$current_release_candidate)
+        current_branch=$(git symbolic-ref --short HEAD)
 
         if [ -z "$current_release_candidate_hash" ]; then
         
@@ -41,7 +47,7 @@ runs:
         else
           
           echo "release candidate alredy exists, lets go to merge."
-          git checkout --quiet origin/$current_release_candidate
+          git checkout --quiet origin/$current_branch
           git merge --allow-unrelated-histories --no-edit origin/rc/$current_release_candidate -m "merge commit auto." || true
           git push --set-upstream origin rc/$current_release_candidate
 
