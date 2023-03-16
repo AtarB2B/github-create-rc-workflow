@@ -50,9 +50,8 @@ runs:
           
           echo $fc_branch
 
-          git pull origin teste --allow-unrelated-histories
-          # git checkout --quiet "origin/$fc_branch"
-          git checkout --quiet teste
+          git pull origin $fc_branch --allow-unrelated-histories
+          git checkout --quiet "origin/$fc_branch"
           git merge --ff --no-edit "origin/rc/${{ inputs.tag }}" -m "Merge Commit Auto." || true
           git push --set-upstream origin "rc/${{ inputs.tag }}"
 
