@@ -29,21 +29,9 @@ runs:
           git rev-parse --short origin/"$1" || true
         }
         
-        current_release_candidate=$(git branch -a | grep -v remotes | grep rc | head -n 1)
-        echo $current_release_candidate
-        echo $current_release_candidate
-        echo $current_release_candidate
-        echo $current_release_candidate
-        echo $current_release_candidate
+        current_release_candidate=$(git branch -a | grep -v remotes | grep rc | head -n 1 2>&1)
         current_release_candidate_hash=$(get_hash $current_release_candidate)
-        echo $current_release_candidate_hash
-        echo $current_release_candidate_hash
-        echo $current_release_candidate_hash
         current_branch=$(git symbolic-ref --short HEAD)
-        echo $current_branch
-        echo $current_branch
-        echo $current_branch
-        echo $current_branch
         
         # current_branch=test
         # current_release_candidate="rc/1679005369"
@@ -53,15 +41,15 @@ runs:
         
           echo "release candidate branch not found, lets create."
           new_version=$(date +%s)
-          git checkout -b origin/rc/$new_version
-          git push --set-upstream origin rc/$new_version
+          git checkout -b origin/rc/$new_version || echo
+          git push --set-upstream origin rc/$new_version || echo
         
         else
           
           echo "release candidate alredy exists, lets go to merge."
-          git checkout --quiet origin/$current_release_candidate
+          git checkout --quiet origin/$current_release_candidate || echo
           git merge --ff-only --no-edit origin/$current_branch -m "merge commit auto." || true
-          git push origin HEAD:$current_release_candidate
+          git push origin HEAD:$current_release_candidate || echo
 
           echo "merge into $current_release_candidate success."
 
