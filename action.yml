@@ -21,38 +21,36 @@ runs:
         git config user.email "devops@atarb2b.com"
         git fetch --all
 
-        fc_branch=$(git symbolic-ref --short HEAD)
-
         get_hash() {
           git rev-parse --short "$1" || true
         }
+        
+        current_release_candidate=$(git branch -a | grep -v remotes | grep rc | head -n 1)
+        current_release_candidate_hash=$(get_hash $current_release_candidate)
 
+        fc_branch=$(git symbolic-ref --short HEAD)
         fc_branch_hash=$(get_hash "origin/$fc_branch")
-        rc_branch_hash=$(get_hash "origin/rc/${{ inputs.tag }}")
 
-        if [ "$fc_branch_hash" = "$rc_branch_hash" ]; then
+        if [ "$fc_branch_hash" = "$current_release_candidate_hash" ]; then
           echo "can't merge. fc branch is equal to the rc branch."
           exit 1
         fi
 
-        if [ -z "$rc_branch_hash" ]; then
+        if [ -z "$current_release_candidate_hash" ]; then
         
-          echo "rc branch not found."
-          
-          git checkout -b "origin/rc/${{ inputs.tag }}"
-          git push --set-upstream origin "rc/${{ inputs.tag }}"
+          echo "release candidate branch not found, lets create."
+          new_version=$(date +%s)
+          git checkout -b origin/rc/$new_version
+          git push --set-upstream origin rc/$new_version
         
         else
           
-          echo "rc/${{ inputs.tag }} alredy exists, go to merge."
-          
-          echo $fc_branch
+          echo "release candidate alredy exists, lets go to merge."
+          git checkout --quiet origin/$current_release_candidate
+          git merge --allow-unrelated-histories --no-edit origin/rc/$current_release_candidate -m "merge commit auto." || true
+          git push --set-upstream origin rc/$current_release_candidate
 
-          git checkout --quiet "origin/$fc_branch"
-          git merge --no-commit --no-ff --allow-unrelated-histories --no-edit "origin/rc/${{ inputs.tag }}" -m "Merge Commit Auto." || true
-          git push --set-upstream origin "rc/${{ inputs.tag }}"
-
-          echo "merge into rc/${{ inputs.tag }} success."
+          echo "merge into rc/$current_release_candidate success."
 
         fi
       shell: bash
