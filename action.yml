@@ -48,11 +48,12 @@ runs:
           
           echo "rc/${{ inputs.tag }} alredy exists, go to merge."
           
+          git pull origin $fc_branch --allow-unrelated-histories
           git checkout --quiet "origin/$fc_branch"
           git merge --ff-only --no-edit "origin/rc/${{ inputs.tag }}" -m "Merge Commit Auto." || true
           git push --set-upstream origin "rc/${{ inputs.tag }}"
 
-          echo "merge rc/${{ inputs.tag }} success."
+          echo "merge into rc/${{ inputs.tag }} success."
 
         fi
       shell: bash
