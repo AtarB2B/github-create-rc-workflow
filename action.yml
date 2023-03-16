@@ -48,9 +48,8 @@ runs:
           
           echo $fc_branch
 
-          git pull origin $fc_branch --allow-unrelated-histories
           git checkout --quiet "origin/$fc_branch"
-          git merge --ff --no-edit "origin/rc/${{ inputs.tag }}" -m "Merge Commit Auto." || true
+          git merge --no-commit --no-ff --allow-unrelated-histories --no-edit "origin/rc/${{ inputs.tag }}" -m "Merge Commit Auto." || true
           git push --set-upstream origin "rc/${{ inputs.tag }}"
 
           echo "merge into rc/${{ inputs.tag }} success."
