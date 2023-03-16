@@ -55,7 +55,7 @@ runs:
           echo "release candidate alredy exists, lets go to merge."
           git checkout --quiet origin/$current_release_candidate
           git merge --ff-only --no-edit origin/$current_branch -m "merge commit auto." || true
-          git push --all
+          git push
 
           echo "merge into $current_release_candidate success."
 
