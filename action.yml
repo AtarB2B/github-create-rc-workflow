@@ -54,8 +54,8 @@ runs:
           echo "start ........................."
           echo "release candidate alredy exists, lets go to merge."
           git checkout --quiet origin/$current_release_candidate
-          git merge --allow-unrelated-histories --no-edit origin/$current_branch -m "merge commit auto." || true
-          git push --set-upstream origin $current_release_candidate
+          git merge --ff-only --no-edit origin/$current_branch -m "merge commit auto." || true
+          git push origin $current_release_candidate
 
           echo "merge into $current_release_candidate success."
 
