@@ -47,9 +47,9 @@ runs:
         else
           
           echo "release candidate alredy exists, lets go to merge."
-          git checkout --quiet origin/$current_branch
-          git merge --allow-unrelated-histories --no-edit origin/rc/$current_release_candidate -m "merge commit auto." || true
-          git push --set-upstream origin rc/$current_release_candidate
+          git checkout --quiet origin/$current_release_candidate
+          git merge --allow-unrelated-histories --no-edit origin/$current_branch -m "merge commit auto." || true
+          git push --set-upstream origin $current_release_candidate
 
           echo "merge into rc/$current_release_candidate success."
 
