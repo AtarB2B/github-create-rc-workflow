@@ -31,11 +31,6 @@ runs:
         fc_branch=$(git symbolic-ref --short HEAD)
         fc_branch_hash=$(get_hash "origin/$fc_branch")
 
-        if [ "$fc_branch_hash" = "$current_release_candidate_hash" ]; then
-          echo "can't merge. fc branch is equal to the rc branch."
-          exit 1
-        fi
-
         if [ -z "$current_release_candidate_hash" ]; then
         
           echo "release candidate branch not found, lets create."
