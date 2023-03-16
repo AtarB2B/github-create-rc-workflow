@@ -20,10 +20,6 @@ runs:
         echo "start ........................."
         echo "start ........................."
         echo "start ........................."
-        echo "start ........................."
-        echo "start ........................."
-        echo "start ........................."
-        echo "start ........................."
 
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
@@ -34,7 +30,7 @@ runs:
         }
         
         current_release_candidate=$(git branch -a | grep -v remotes | grep rc | head -n 1)
-        current_release_candidate_hash=$(get_hash origin/$current_release_candidate)
+        current_release_candidate_hash=$(get_hash $current_release_candidate)
         current_branch=$(git symbolic-ref --short HEAD)
 
         if [ -z "$current_release_candidate_hash" ]; then
