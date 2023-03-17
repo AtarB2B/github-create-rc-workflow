@@ -24,19 +24,21 @@ runs:
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
         
+        get_hash() {
+          git rev-parse --short "$1" || true
+        }
+
         current_branch=$(git symbolic-ref --short HEAD)
 
         git branch --delete --remotes origin/$current_branch
         git branch -r | grep -v '\->' | while read remote; do git branch --track "${remote#origin/}" "$remote"; done 2>&1 || echo
         git fetch --all
         git pull --all
-
-        get_hash() {
-          git rev-parse --short "$1" || true
-        }
         
-        current_release_candidate=$(git branch -a | grep -v remotes | grep rc | head -n 1 2>&1)
+        current_release_candidate=$(git branch -a | grep -v remotes | grep rc | head -n 1)
+        echo $current_release_candidate
         current_release_candidate_hash=$(get_hash $current_release_candidate)
+        echo $current_release_candidate_hash
 
         if [ -z "$current_release_candidate_hash" ]; then
         
