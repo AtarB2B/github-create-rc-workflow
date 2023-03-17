@@ -24,8 +24,7 @@ runs:
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
         
-        git branch -d main
-        git branch -r | grep -v '\->' | while read remote; do git branch --track "${remote#origin/}" "$remote"; done 2>&1
+        remote=origin ; for brname in `git branch -r | grep $remote | grep -v master | grep -v HEAD | awk '{gsub(/^[^\/]+\//,"",$1); print $1}'`; do git branch --set-upstream-to $remote/$brname $brname; done 2>&1
         git fetch --all
         git pull --all
 
