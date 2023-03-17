@@ -13,62 +13,49 @@ runs:
     - name: Git checkout
       uses: actions/checkout@v3
     
-    - name: Run script
-      run: ./test.sh
-      shell: bash
-
-    # - name: check rc and merge
-    #   run: |
-    #     #!/usr/bin/env bash
-
-    #     echo "..............................."
-    #     echo "start ........................."
-    #     echo "..............................."
-
-    #     git config user.name "GitHub Actions Bot"
-    #     git config user.email "devops@atarb2b.com"
-        
-    #     get_hash() {
-    #       git rev-parse --short "$1" || true
-    #     }
-
-    #     current_branch=$(git symbolic-ref --short HEAD)
-    #     git branch --delete --remotes origin/$current_branch
-    #     git branch -r | grep -v '\->' | while read remote; do git branch --track "${remote#origin/}" "$remote"; done 2>&1
-    #     git fetch --all
-    #     git pull --all
-        
-    #     current_release_candidate=$(git branch -a | grep rc | head -n 1 2>&1)
-    #     current_release_candidate_hash=$(get_hash $current_release_candidate)
-
-    #     echo "..............................."
-    #     echo "the current release candidate is $current_release_candidate - $current_release_candidate_hash"
-    #     echo "..............................."
-
-    #     if [ -z "$current_release_candidate_hash" ]; then
-        
-    #       new_version=$(date +%s)
-    #       echo "..............................."
-    #       echo "release candidate branch not found, lets create rc/$new_version."
-    #       echo "..............................."
-    #       git checkout -b origin/rc/$new_version
-    #       git push --set-upstream origin rc/$new_version || echo
-        
-    #     else
-          
-    #       echo "..............................."
-    #       echo "release candidate alredy exists, lets go to merge."
-    #       echo "..............................."
-    #       git checkout --quiet $current_release_candidate_hash
-    #       git merge --ff-only --no-edit $current_branch -m "merge commit auto." || true
-    #       git push origin HEAD:$current_release_candidate_hash || echo
-          
-    #       echo "..............................."
-    #       echo "merge into $current_release_candidate success."
-    #       echo "..............................."
-
-    #     fi
+    # - name: Run script
+    #   run: ./test.sh
     #   shell: bash
+
+    - name: check rc and merge
+      run: |
+        #!/usr/bin/env bash
+
+        git config user.name "GitHub Actions Bot"
+        git config user.email "devops@atarb2b.com"
+        git config pull.ff only       # fast-forward only
+
+        get_hash() {
+            git rev-parse --short "$1" || true
+        }
+
+        git branch --delete --remotes origin/main
+        git branch -r | grep -v '\->' | while read remote; do git branch --track "${remote#origin/}" "$remote"; done
+        git fetch --all
+        git pull --all
+
+        current_release_candidate=$(git branch -a | grep rc | head -n 1 | cut -c 18- 2>&1)
+        current_release_candidate_hash=$(get_hash origin/$current_release_candidate)
+        current_branch=$(git symbolic-ref --short HEAD)
+        current_branch_hash=$(get_hash $current_branch)
+
+        if [ -z "$current_release_candidate_hash" ]; then
+            new_version=$(date +%s)
+            git checkout -b rc/$new_version
+            git push --set-upstream origin rc/$new_version
+            new_rc_hash=$(get_hash rc/$new_version)
+
+            if [ "$new_rc_hash" = "$current_branch_hash" ]; then
+                echo "Nothin to merge. rc is equal to the base branch."
+                exit 1
+            fi
+        else
+            git checkout $current_release_candidate
+            git merge $current_branch --no-edit --ff-only --no-commit --allow-unrelated-histories
+            git commit -am "merge auto from ${current_branch}"
+            git push origin $current_release_candidate
+        fi
+      shell: bash
 
     - name: Send Message to Slack
       uses: 8398a7/action-slack@v3
