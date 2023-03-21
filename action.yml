@@ -12,14 +12,31 @@ runs:
       run: chown -R $(id -u):$(id -g) $PWD
       shell: bash
 
-    - name: New RC Version
-      id: version
+    - name: Check Current Branch
+      id: current
       run: |
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
-        
+        echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: New RC Version
+      id: version
+      run: |
         npm install version
         echo "NEW_VERSION=$(npm version minor)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Hash New RC Version
+      id: harshrc
+      run: |
+        echo "HASHRC=$(git rev-parse --short "${{ steps.version.outputs.NEW_VERSION }}")" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Hash Current Branch
+      id: hashcurrent
+      run: |
+        echo "HASHCURRENT=$(git rev-parse --short "${{ steps.current.outputs.CURRENT_BRANCH }}")" >> $GITHUB_OUTPUT
       shell: bash
 
     - id: check-branch-exists
@@ -28,21 +45,23 @@ runs:
         branch: ${{ steps.version.outputs.NEW_VERSION }}
 
     - if: steps.check-branch-exists.outputs.exists == 'true'
-      run: |
-        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+      run: |        
         
-        echo "Open PR from $(CURRENT_BRANCH) to ${{ steps.version.outputs.NEW_VERSION }}."
+        if [ "$${{ steps.harshrc.outputs.NEW_VERSION }}" = "${{ steps.hashcurrent.outputs.CURRENT_BRANCH }}" ]; then
+          echo "Nothin to merge. rc is equal to the base branch."
+          exit 1
+        fi
+
+        echo "Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{ steps.version.outputs.NEW_VERSION }}."
         
-        gh pr create --base=rc/${{ steps.version.outputs.NEW_VERSION }} --head=$CURRENT_BRANCH --title="[FC] branch $CURRENT_BRANCH to RC/${{ steps.version.outputs.NEW_VERSION }} " --body="Pull Request FC to RC"
+        gh pr create --base=rc/${{ steps.version.outputs.NEW_VERSION }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.version.outputs.NEW_VERSION }} " --body="Pull Request FC to RC"
       shell: bash
 
     - if: steps.check-branch-exists.outputs.exists == 'false'
       run: |
-        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        
         echo "New Release Candidate is RC/${{ steps.version.outputs.NEW_VERSION }}"
         
         git checkout -b rc/${{ steps.version.outputs.NEW_VERSION }} || echo
         git push --set-upstream origin rc/${{ steps.version.outputs.NEW_VERSION }} || echo
-        gh pr create --base=rc/${{ steps.version.outputs.NEW_VERSION }} --head=$CURRENT_BRANCH --title="[FC] branch $CURRENT_BRANCH to RC/${{ steps.version.outputs.NEW_VERSION }} " --body="Pull Request FC to RC"
+        gh pr create --base=rc/${{ steps.version.outputs.NEW_VERSION }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.version.outputs.NEW_VERSION }} " --body="Pull Request FC to RC"
       shell: bash
