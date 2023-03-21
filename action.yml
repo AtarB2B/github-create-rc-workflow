@@ -24,7 +24,7 @@ runs:
         echo "passei 2"
         current_fc_hash=$(git rev-parse --short $current_fc)
         echo "passei 3"
-        current_rc=$(git branch | grep rc | head -n 1)
+        current_rc=$(git branch -r --no-color | grep "rc" | head -n 1)
         echo $current_rc
         echo "passei 4"
         current_rc_hash=$(git rev-parse --short $current_rc)
