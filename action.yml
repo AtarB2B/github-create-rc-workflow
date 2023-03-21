@@ -18,7 +18,7 @@ runs:
         git config user.email "devops@atarb2b.com"
         
         npm install version
-        new_version=v$(npm version minor)
+        new_version=$(npm version minor)
         echo "$new_version" >> "$GITHUB_OUTPUT"
       shell: bash
 
