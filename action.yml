@@ -15,6 +15,9 @@ runs:
     - name: New RC Version
       id: version
       run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "devops@atarb2b.com"
+        
         npm install version
         echo "NEW_VERSION=$(npm version minor)" >> $GITHUB_OUTPUT
       shell: bash
@@ -32,8 +35,6 @@ runs:
     - if: steps.check-branch-exists.outputs.exists == 'false'
       run: |
         echo " not exists"
-        # git config user.name "GitHub Actions Bot"
-        # git config user.email "devops@atarb2b.com"
         # echo "New Release Candidate is rc/$new_version"
 
         # git checkout -b rc/$new_version || echo
