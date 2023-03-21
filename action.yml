@@ -14,7 +14,6 @@ runs:
 
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
-        git branch -r | grep -v '\->' | while read remote; do git branch --track "${remote#origin/}" "$remote"; done
         
         current_fc=$(git rev-parse --abbrev-ref HEAD)
         current_fc_hash=$(git rev-parse --short $current_fc)
