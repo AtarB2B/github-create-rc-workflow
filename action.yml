@@ -30,13 +30,19 @@ runs:
     - if: steps.check-branch-exists.outputs.exists == 'true'
       run: |
         CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        
         echo "Open PR from $(CURRENT_BRANCH) to ${{ steps.version.outputs.NEW_VERSION }}."
+        
         gh pr create --base=rc/${{ steps.version.outputs.NEW_VERSION }} --head=$CURRENT_BRANCH --title="[FC] branch $CURRENT_BRANCH to RC/${{ steps.version.outputs.NEW_VERSION }} " --body="Pull Request FC to RC"
       shell: bash
 
     - if: steps.check-branch-exists.outputs.exists == 'false'
       run: |
+        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        
         echo "New Release Candidate is RC/${{ steps.version.outputs.NEW_VERSION }}"
+        
         git checkout -b rc/${{ steps.version.outputs.NEW_VERSION }} || echo
         git push --set-upstream origin rc/${{ steps.version.outputs.NEW_VERSION }} || echo
+        gh pr create --base=rc/${{ steps.version.outputs.NEW_VERSION }} --head=$CURRENT_BRANCH --title="[FC] branch $CURRENT_BRANCH to RC/${{ steps.version.outputs.NEW_VERSION }} " --body="Pull Request FC to RC"
       shell: bash
