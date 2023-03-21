@@ -12,60 +12,76 @@ runs:
       run: chown -R $(id -u):$(id -g) $PWD
       shell: bash
 
-    - name: check rc and merge
+    - name: Get branch name
+      id: branch-name
+      uses: tj-actions/branch-names@v6
+
+    - name: Running on the default branch.
+      if: steps.branch-name.outputs.is_default == 'true'
       run: |
-        #!/usr/bin/env bash
-
-        git config user.name "GitHub Actions Bot"
-        git config user.email "devops@atarb2b.com"
-        
-        echo "CUR_FC=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
-        # current_fc=$(git rev-parse --abbrev-ref HEAD)
-        # echo $current_fc
-        echo "passei 1"
-        echo $CUR_FC
-        
-        echo "CUR_FC_HASH=$(git rev-parse --short $CUR_FC)" >> $GITHUB_ENV
-        # current_fc_hash=$(git rev-parse --short $current_fc)
-        # echo $current_fc_hash
-        echo "passei 2"
-        echo $CUR_FC_HASH
-        
-        echo "CUR_RC=$(git branch -a --no-color | grep "rc" | head -n 1 | cut -c 11-)" >> $GITHUB_ENV
-        # current_rc=$(git branch -a --no-color | grep "rc" | head -n 1 | cut -c 11-)
-        # echo $current_rc
-        echo "passei 3"
-        echo $CUR_RC
-
-        # current_rc_hash=$(git rev-parse --short $current_rc)
-        # echo "passei 4"
-        # echo $current_rc_hash
-
-        echo "Current Release Candidate is $current_rc - $current_rc_hash"
-        echo "..............................."
-        
-        if [ "$current_fc_hash" = "$current_rc_hash" ]; then
-          echo "ERROR......."
-          exit 1
-        fi
-
-        if [ -z "$current_rc_hash" ]; then
-
-            npm install version
-            new_version=$(npm version minor)
-
-            echo "New Release Candidate is rc/$new_version"
-
-            git checkout -b rc/$new_version || echo
-            git push --set-upstream origin rc/$new_version || echo
-
-            echo "Open PR from $current_fc to rc/$new_version."
-            gh pr create --base=rc/$new_version --head=$current_fc --title="[FC] branch $current_fc to RC/$new_version" --body="Pull Request FC to RC"
-
-        else
-            
-            echo "The $current_rc alredy exists, opening pr."
-            gh pr create --base=$current_rc --head=$current_fc --title="[FC] branch $current_fc to RC/$current_rc" --body="Pull Request FC to RC"
-
-        fi
+        echo "Running on default: ${{ steps.branch-name.outputs.current_branch }}"
       shell: bash
+
+    - name: Running on a pull request branch.
+      if: steps.branch-name.outputs.is_default == 'false'
+      run: |
+        echo "Running on pr: ${{ steps.branch-name.outputs.current_branch }}"
+      shell: bash
+
+    # - name: check rc and merge
+    #   run: |
+    #     #!/usr/bin/env bash
+
+    #     git config user.name "GitHub Actions Bot"
+    #     git config user.email "devops@atarb2b.com"
+        
+    #     echo "CUR_FC=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+    #     # current_fc=$(git rev-parse --abbrev-ref HEAD)
+    #     # echo $current_fc
+    #     echo "passei 1"
+    #     echo $CUR_FC
+        
+    #     echo "CUR_FC_HASH=$(git rev-parse --short $CUR_FC)" >> $GITHUB_ENV
+    #     # current_fc_hash=$(git rev-parse --short $current_fc)
+    #     # echo $current_fc_hash
+    #     echo "passei 2"
+    #     echo $CUR_FC_HASH
+        
+    #     echo "CUR_RC=$(git branch -a --no-color | grep "rc" | head -n 1 | cut -c 11-)" >> $GITHUB_ENV
+    #     # current_rc=$(git branch -a --no-color | grep "rc" | head -n 1 | cut -c 11-)
+    #     # echo $current_rc
+    #     echo "passei 3"
+    #     echo $CUR_RC
+
+    #     # current_rc_hash=$(git rev-parse --short $current_rc)
+    #     # echo "passei 4"
+    #     # echo $current_rc_hash
+
+    #     echo "Current Release Candidate is $current_rc - $current_rc_hash"
+    #     echo "..............................."
+        
+    #     if [ "$current_fc_hash" = "$current_rc_hash" ]; then
+    #       echo "ERROR......."
+    #       exit 1
+    #     fi
+
+    #     if [ -z "$current_rc_hash" ]; then
+
+    #         npm install version
+    #         new_version=$(npm version minor)
+
+    #         echo "New Release Candidate is rc/$new_version"
+
+    #         git checkout -b rc/$new_version || echo
+    #         git push --set-upstream origin rc/$new_version || echo
+
+    #         echo "Open PR from $current_fc to rc/$new_version."
+    #         gh pr create --base=rc/$new_version --head=$current_fc --title="[FC] branch $current_fc to RC/$new_version" --body="Pull Request FC to RC"
+
+    #     else
+            
+    #         echo "The $current_rc alredy exists, opening pr."
+    #         gh pr create --base=$current_rc --head=$current_fc --title="[FC] branch $current_fc to RC/$current_rc" --body="Pull Request FC to RC"
+
+    #     fi
+    #   shell: bash
