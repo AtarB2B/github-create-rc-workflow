@@ -32,6 +32,11 @@ runs:
         echo "Current Release Candidate is $current_rc - $current_rc_hash"
         echo "..............................."
 
+        if [ "$current_fc" = "$current_rc_hash" ]; then
+          echo "ERROR......."
+          exit 1
+        fi
+
         if [ -z "$current_rc_hash" ]; then
 
             npm install version
