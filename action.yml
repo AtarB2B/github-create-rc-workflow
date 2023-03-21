@@ -24,6 +24,11 @@ runs:
         current_rc=$(git branch -r --no-color | grep "rc" | head -n 1)        
         current_rc_hash=$(git rev-parse --short $current_rc)
         
+        echo $current_fc
+        echo $current_fc_hash
+        echo $current_rc
+        echo $current_rc_hash
+
         echo "Current Release Candidate is $current_rc - $current_rc_hash"
         echo "..............................."
         
@@ -31,11 +36,7 @@ runs:
           echo "ERROR......."
           exit 1
         fi
-        
 
-        echo "passei"
-
-        
         if [ -z "$current_rc_hash" ]; then
 
             npm install version
