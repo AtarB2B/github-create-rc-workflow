@@ -27,7 +27,7 @@ runs:
         echo "passei 2"
         echo $current_fc_hash
         
-        git branch -a >> $GITHUB_OUTPUT
+        git branch -av >> $GITHUB_OUTPUT
         
         # current_rc=$(git branch -a --no-color | grep "rc" | head -n 1 | cut -c 11-) >> $GITHUB_OUTPUT        
         echo "passei 3"
