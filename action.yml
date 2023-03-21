@@ -19,21 +19,22 @@ runs:
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
         
-        current_fc=$(git rev-parse --abbrev-ref HEAD) >> $GITHUB_OUTPUT
+        current_fc=$(git rev-parse --abbrev-ref HEAD)
         echo "passei 1"
         echo $current_fc
         
-        current_fc_hash=$(git rev-parse --short $current_fc) >> $GITHUB_OUTPUT
+        current_fc_hash=$(git rev-parse --short $current_fc)
         echo "passei 2"
         echo $current_fc_hash
         
-        git branch -av >> $GITHUB_OUTPUT
+        echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+        echo $GITHUB_SHA_SHORT
         
-        # current_rc=$(git branch -a --no-color | grep "rc" | head -n 1 | cut -c 11-) >> $GITHUB_OUTPUT        
+        current_rc=$(git branch -a --no-color | grep "rc" | head -n 1 | cut -c 11-)   
         echo "passei 3"
         echo $current_rc
 
-        current_rc_hash=$(git rev-parse --short $current_rc) >> $GITHUB_OUTPUT
+        current_rc_hash=$(git rev-parse --short $current_rc)
         echo "passei 4"
         echo $current_rc_hash
 
