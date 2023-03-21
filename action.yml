@@ -37,8 +37,8 @@ runs:
 
             echo "New Release Candidate is rc/$new_version"
 
-            git checkout -b rc/$new_version
-            git push --set-upstream origin rc/$new_version
+            git checkout -b rc/$new_version || echo
+            git push --set-upstream origin rc/$new_version || echo
 
             echo "Open PR from $current_fc to rc/$new_version."
             gh pr create --base=rc/$new_version --head=$current_fc --title="[FC] branch $current_fc to RC/$new_version" --body="Pull Request FC to RC"
