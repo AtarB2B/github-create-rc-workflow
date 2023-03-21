@@ -8,6 +8,9 @@ runs:
     - name: Git checkout
       uses: actions/checkout@v3
 
+    - name: Change Owner of Container Working Directory
+      run: chown -R $(id -u):$(id -g) $PWD
+
     - name: check rc and merge
       run: |
         #!/usr/bin/env bash
@@ -15,11 +18,15 @@ runs:
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
         
+        echo "passei 1"
         current_fc=$(git rev-parse --abbrev-ref HEAD)
+        echo "passei 2"
         current_fc_hash=$(git rev-parse --short $current_fc)
+        echo "passei 3"
         current_rc=$(git branch -a | grep rc | head -n 1 | cut -c 18- 2>&1)
+        echo "passei 4"
         current_rc_hash=$(git rev-parse --short origin/$current_rc)
-
+        echo "passei 5"
         echo "Current Release Candidate is $current_rc - $current_rc_hash"
         echo "..............................."
 
