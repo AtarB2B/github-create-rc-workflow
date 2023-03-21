@@ -25,8 +25,7 @@ runs:
         current_fc_hash=$(git rev-parse --short $current_fc)
         echo "passei 3"
         # current_rc=$(git branch -a | grep rc | head -n 1)
-        latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
-        current_rc=$(git ls-remote --heads --exit-code origin $latestTag)
+        git branch -a | grep rc | head -n 1
         echo $current_rc
         echo "passei 4"
         current_rc_hash=$(git rev-parse --short origin/$current_rc)
