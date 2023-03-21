@@ -14,6 +14,9 @@ runs:
 
     - id: check-branch
       run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "devops@atarb2b.com"
+        
         npm install version
         new_version=v$(npm version minor)
         echo "$new_version" >> "$GITHUB_OUTPUT"
