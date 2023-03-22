@@ -26,7 +26,7 @@ runs:
     - name: Hash New RC Version
       id: harshrc
       run: |
-        echo "HASHRC=$(git rev-parse --short "${{ steps.version.outputs.NEW_VERSION }}")" >> $GITHUB_OUTPUT
+        echo "HASHRC=$(git rev-parse --short "${{ steps.versioning.outputs.automatic_releases_tag }}")" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Hash Current Branch
@@ -38,7 +38,7 @@ runs:
     - id: check-branch-exists
       uses: GuillaumeFalourd/branch-exists@v1
       with:
-        branch: ${{ steps.version.outputs.NEW_VERSION }}
+        branch: ${{ steps.versioning.outputs.automatic_releases_tag }}
 
     - if: steps.check-branch-exists.outputs.exists == 'true'
       run: |        
