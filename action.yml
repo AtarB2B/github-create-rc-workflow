@@ -20,8 +20,9 @@ runs:
         echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
       shell: bash
 
-    - id: versioning
-      uses: AtarB2B/github-versioning-automation-workflow/.github/workflows/versioning_automation.yml@main
+    - name: Workflow version
+      id: versioning
+      uses: AtarB2B/github-semantic-versioning-actions@main
 
     - name: Hash New RC Version
       id: harshrc
