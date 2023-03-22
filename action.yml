@@ -24,7 +24,9 @@ runs:
       id: version
       run: |
         npm install version
+        npm version from-git
         echo "NEW_VERSION=$(npm version minor)" >> $GITHUB_OUTPUT
+        echo $NEW_VERSION
       shell: bash
 
     - name: Hash New RC Version
