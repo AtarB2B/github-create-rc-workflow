@@ -20,14 +20,8 @@ runs:
         echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: New RC Version
-      id: version
-      run: |
-        npm install version
-        npm version from-git
-        echo "NEW_VERSION=$(npm version minor)" >> $GITHUB_OUTPUT
-        echo $NEW_VERSION
-      shell: bash
+    - id: versioning
+      uses: AtarB2B/github-versioning-automation-workflow/.github/workflows/versioning_automation.yml@main
 
     - name: Hash New RC Version
       id: harshrc
