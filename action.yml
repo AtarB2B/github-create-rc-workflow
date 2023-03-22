@@ -20,7 +20,7 @@ runs:
         echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Workflow version
+    - name: Check version
       id: versioning
       uses: AtarB2B/github-semantic-versioning-actions@main
 
