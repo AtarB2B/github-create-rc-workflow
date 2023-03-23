@@ -40,10 +40,16 @@ runs:
         secondaryBranchPath=$(git branch -r | grep "$secondaryBranch" | xargs)
         commitDiffCount=$(git log --oneline "$secondaryBranchPath" \^"$baseBranchPath" | wc -l)
         
-        echo '{"commitDiffCount": "'"$commitDiffCount"'"}' 
-
-        echo "Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{ steps.versioning.outputs.version }}."
-        gh pr create --base=rc/${{ steps.versioning.outputs.version }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.versioning.outputs.version }} " --body="Pull Request FC to RC"
+        if [[ "$commitDiffCount" -eq 0 ]]; then
+        
+          echo "------------  NOTHING TO MERGE  ------------"
+        
+        else
+          
+          echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{ steps.versioning.outputs.version }}.  ------------"
+          gh pr create --base=rc/${{ steps.versioning.outputs.version }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.versioning.outputs.version }} " --body="Pull Request FC to RC"
+        
+        fi
       
       shell: bash
 
