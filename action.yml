@@ -24,18 +24,6 @@ runs:
       id: versioning
       uses: AtarB2B/github-semantic-versioning-actions@main
 
-    - name: Hash New RC Version
-      id: harshrc
-      run: |
-        echo "HASHRC=$(git rev-parse --short "${{ steps.versioning.outputs.version }}")" >> $GITHUB_OUTPUT
-      shell: bash
-
-    - name: Hash Current Branch
-      id: hashcurrent
-      run: |
-        echo "HASHCURRENT=$(git rev-parse --short "${{ steps.current.outputs.CURRENT_BRANCH }}")" >> $GITHUB_OUTPUT
-      shell: bash
-
     - id: check-branch-exists
       uses: GuillaumeFalourd/branch-exists@v1
       with:
@@ -44,14 +32,9 @@ runs:
     - if: steps.check-branch-exists.outputs.exists == 'true'
       run: |        
         
-        if [ "$${{ steps.harshrc.outputs.HASHRC }}" = "${{ steps.hashcurrent.outputs.CURRENT_BRANCH }}" ]; then
-          echo "Nothin to merge. rc is equal to the base branch."
-          exit 1
-        fi
-
         echo "Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{ steps.versioning.outputs.version }}."
-        
         gh pr create --base=rc/${{ steps.versioning.outputs.version }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.versioning.outputs.version }} " --body="Pull Request FC to RC"
+      
       shell: bash
 
     - if: steps.check-branch-exists.outputs.exists == 'false'
@@ -60,5 +43,4 @@ runs:
         
         git checkout -b rc/${{ steps.versioning.outputs.version }} || echo
         git push --set-upstream origin rc/${{ steps.versioning.outputs.version }} || echo
-        # gh pr create --base=rc/${{ steps.versioning.outputs.version }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.versioning.outputs.version }} " --body="Pull Request FC to RC"
       shell: bash
