@@ -59,4 +59,7 @@ runs:
         git checkout main || echo
         git checkout -b rc/${{ steps.versioning.outputs.version }} || echo
         git push --set-upstream origin rc/${{ steps.versioning.outputs.version }} || echo
+        
+        gh pr create --base=rc/${{ steps.versioning.outputs.version }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.versioning.outputs.version }} " --body="Pull Request FC to RC"
+
       shell: bash
