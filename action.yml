@@ -56,7 +56,7 @@ runs:
     - if: steps.check-branch-exists.outputs.exists == 'false'
       run: |
         echo "New Release Candidate is rc/${{ steps.versioning.outputs.version }}"
-        
+        git checkout main || echo
         git checkout -b rc/${{ steps.versioning.outputs.version }} || echo
         git push --set-upstream origin rc/${{ steps.versioning.outputs.version }} || echo
       shell: bash
