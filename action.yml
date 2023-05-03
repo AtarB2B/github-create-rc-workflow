@@ -2,6 +2,17 @@ name: Create Release Candidate
 
 description: Create Release Candidate
 
+inputs:
+  ORIGIN:
+    required: true
+    description: Origem
+  SERVICE:
+    required: true
+    description: Service
+  SERVICE_ACCOUNT_CREDENTIALS:
+    required: true
+    description: Service account credentials
+
 runs:
   using: "composite"
   steps:
@@ -20,20 +31,48 @@ runs:
         echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Check version
-      id: versioning
-      uses: AtarB2B/github-semantic-versioning-actions@main
+    - if: ${{ inputs.ORIGIN }} == 'fc'
+      name: Check version
+      run: |
+        URL="https://wearatar-dev.appspot.com/api-version/${{ inputs.SERVICE }}"
+        DATA="{\"incrementType\":\"minor\"}"
+        VERSION=$(curl $URL \
+        --request PUT \
+        --data $DATA \
+        --header "user-agent: appengine-google" \
+        --header "Content-Type: application/json" \
+        --header "Authorization: Basic ${{ inputs.SERVICE_ACCOUNT_CREDENTIALS}}" | jq -r '.version')
+
+        echo "TAG=v${VERSION}" >> $GITHUB_ENV
+        
+      shell: bash
+
+    - if: ${{ inputs.ORIGIN }} == 'fix'
+      name: Check version
+      run: |
+        URL="https://wearatar-dev.appspot.com/api-version/${{ inputs.SERVICE }}"
+        DATA="{\"incrementType\":\"patch\"}"
+        VERSION=$(curl $URL \
+        --request PUT \
+        --data $DATA \
+        --header "user-agent: appengine-google" \
+        --header "Content-Type: application/json" \
+        --header "Authorization: Basic ${{ inputs.SERVICE_ACCOUNT_CREDENTIALS}}" | jq -r '.version')
+        
+        echo "TAG=v${VERSION}" >> $GITHUB_ENV
+
+      shell: bash
 
     - id: check-branch-exists
       uses: GuillaumeFalourd/branch-exists@v1
       with:
-        branch: ${{ steps.versioning.outputs.version }}
+        branch: ${{env.TAG}}
 
     - if: steps.check-branch-exists.outputs.exists == 'true'
       run: |        
         
         baseBranch=${{ steps.current.outputs.CURRENT_BRANCH }}
-        secondaryBranch=rc/${{ steps.versioning.outputs.version }}
+        secondaryBranch=rc/${{env.TAG}}
 
         commitDiffCount=''
         baseBranchPath=$(git branch -r | grep "$baseBranch" | xargs)
@@ -46,8 +85,8 @@ runs:
         
         else
           
-          echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{ steps.versioning.outputs.version }}.  ------------"
-          gh pr create --base=rc/${{ steps.versioning.outputs.version }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.versioning.outputs.version }} " --body="Pull Request FC to RC"
+          echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{env.TAG}}.  ------------"
+          gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
         
         fi
       
@@ -55,11 +94,11 @@ runs:
 
     - if: steps.check-branch-exists.outputs.exists == 'false'
       run: |
-        echo "New Release Candidate is rc/${{ steps.versioning.outputs.version }}"
+        echo "New Release Candidate is rc/${{env.TAG}}"
         git checkout main || echo
-        git checkout -b rc/${{ steps.versioning.outputs.version }} || echo
-        git push --set-upstream origin rc/${{ steps.versioning.outputs.version }} || echo
+        git checkout -b rc/${{env.TAG}} || echo
+        git push --set-upstream origin rc/${{env.TAG}} || echo
         
-        gh pr create --base=rc/${{ steps.versioning.outputs.version }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.versioning.outputs.version }} " --body="Pull Request FC to RC"
+        gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
 
       shell: bash
