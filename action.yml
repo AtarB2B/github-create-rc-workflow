@@ -6,9 +6,6 @@ inputs:
   ORIGIN:
     required: true
     description: Origem
-  GITHUB_TOKEN:
-    required: true
-    description: GITHUB_TOKEN
 
 runs:
   using: "composite"
@@ -42,7 +39,7 @@ runs:
     - if: ${{ inputs.ORIGIN }} == 'fc'
       name: Bump Minor
       run: |
-        echo "TAG=v$(semver bump patch ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
+        echo "TAG=v$(semver bump minor ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
       shell: bash
 
     - if: ${{ inputs.ORIGIN }} == 'hotfix'
