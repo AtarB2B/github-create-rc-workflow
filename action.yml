@@ -33,8 +33,9 @@ runs:
         wget -O /usr/local/bin/semver https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver
         chmod +x /usr/local/bin/semver
         semver --version
+        semver bump patch $(git describe --tags $(git rev-list --tags --max-count=1))
       shell: bash
-      
+
     # - if: ${{ inputs.ORIGIN }} == 'fc'
     #   name: bump
     #   uses: anothrNick/github-tag-action@1.61.0
