@@ -39,14 +39,14 @@ runs:
     - if: ${{ inputs.ORIGIN }} == 'fc'
       name: Bump Minor
       run: |
-        encho "entrei fc entrei fc"
+        echo "entrei fc entrei fc"
         echo "TAG=v$(semver bump minor ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
       shell: bash
 
     - if: ${{ inputs.ORIGIN }} == 'hotfix'
       name: Bump Patch
       run: |
-        encho "entrei fix entrei fix"
+        echo "entrei fix entrei fix"
         echo "TAG=v$(semver bump patch ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
       shell: bash
     
