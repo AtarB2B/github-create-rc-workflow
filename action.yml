@@ -36,18 +36,19 @@ runs:
         semver --version
       shell: bash
 
-    - if: ${{ inputs.ORIGIN }} == 'fc'
-      name: Bump Minor
+    - name: Valid Origin
       run: |
-        echo "entrei fc entrei fc"
-        echo "TAG=v$(semver bump minor ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
-      shell: bash
-
-    - if: ${{ inputs.ORIGIN }} == 'hotfix'
-      name: Bump Patch
-      run: |
-        echo "entrei fix entrei fix"
-        echo "TAG=v$(semver bump patch ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
+        if [[ ${{ inputs.ORIGIN }} == 'fc' ]]; then
+        
+          echo "------------  FEATURE CANDIDATE - RC  ------------"
+          echo "TAG=v$(semver bump minor ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
+        
+        else
+          
+          echo "------------  HOTFIX - RC  ------------"
+          echo "TAG=v$(semver bump patch ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
+          
+        fi
       shell: bash
     
     - id: check-branch-exists
