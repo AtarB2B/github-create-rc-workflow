@@ -41,26 +41,26 @@ runs:
 
     - if: ${{ inputs.ORIGIN }} == 'fc'
       name: Bump Minor
-      id: bump
-      run: semver bump minor ${{ steps.current.outputs.TAG }}
+      run: |
+        echo "TAG=v$(semver bump patch ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
       shell: bash
 
     - if: ${{ inputs.ORIGIN }} == 'hotfix'
       name: Bump Patch
-      id: bump
-      run: semver bump patch ${{ steps.current.outputs.TAG }}
+      run: |
+        echo "TAG=v$(semver bump patch ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
       shell: bash
     
     - id: check-branch-exists
       uses: GuillaumeFalourd/branch-exists@v1
       with:
-        branch: v${{ steps.current.outputs.TAG }}
+        branch: ${{env.TAG}}
 
     # - if: steps.check-branch-exists.outputs.exists == 'true'
     #   run: |        
         
     #     baseBranch=${{ steps.current.outputs.CURRENT_BRANCH }}
-    #     secondaryBranch=rc/${{ steps.current.outputs.TAG }}
+    #     secondaryBranch=rc/${{env.TAG}}
 
     #     commitDiffCount=''
     #     baseBranchPath=$(git branch -r | grep "$baseBranch" | xargs)
@@ -73,8 +73,8 @@ runs:
         
     #     else
           
-    #       echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{ steps.current.outputs.TAG }}.  ------------"
-    #       gh pr create --base=rc/${{ steps.current.outputs.TAG }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.current.outputs.TAG }} " --body="Pull Request FC to RC"
+    #       echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{env.TAG}}.  ------------"
+    #       gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
         
     #     fi
       
@@ -82,11 +82,11 @@ runs:
 
     # - if: steps.check-branch-exists.outputs.exists == 'false'
     #   run: |
-    #     echo "New Release Candidate is rc/${{ steps.current.outputs.TAG }}"
+    #     echo "New Release Candidate is rc/${{env.TAG}}"
     #     git checkout main || echo
-    #     git checkout -b rc/${{ steps.current.outputs.TAG }} || echo
-    #     git push --set-upstream origin rc/${{ steps.current.outputs.TAG }} || echo
+    #     git checkout -b rc/${{env.TAG}} || echo
+    #     git push --set-upstream origin rc/${{env.TAG}} || echo
         
-    #     gh pr create --base=rc/${{ steps.current.outputs.TAG }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.current.outputs.TAG }} " --body="Pull Request FC to RC"
+    #     gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
 
     #   shell: bash
