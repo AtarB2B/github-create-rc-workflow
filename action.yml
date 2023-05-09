@@ -41,6 +41,8 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         DEFAULT_BUMP: "#patch"
+        PRERELEASE: "true"
+        VERBOSE: "true"
 
     - name: check
       run: echo ${{ steps.bump.outputs.new_tag }}
