@@ -33,19 +33,17 @@ runs:
       uses: anothrNick/github-tag-action@1.61.0
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
-        WITH_V: "true"
-        DEFAULT_BUMP: "minor"
+        DEFAULT_BUMP: "#minor"
 
     - if: ${{ inputs.ORIGIN }} == 'fix'
       name: bump
       uses: anothrNick/github-tag-action@1.61.0
       env:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
-        WITH_V: "true"
-        DEFAULT_BUMP: "patch"
+        DEFAULT_BUMP: "#patch"
 
     - name: check
-      run: echo steps.bump.outputs
+      run: echo ${{ steps.bump.outputs.new_tag }}
       shell: bash
     
     # - id: check-branch-exists
