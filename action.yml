@@ -56,37 +56,37 @@ runs:
       with:
         branch: ${{env.TAG}}
 
-    # - if: steps.check-branch-exists.outputs.exists == 'true'
-    #   run: |        
+    - if: steps.check-branch-exists.outputs.exists == 'true'
+      run: |        
         
-    #     baseBranch=${{ steps.current.outputs.CURRENT_BRANCH }}
-    #     secondaryBranch=rc/${{env.TAG}}
+        baseBranch=${{ steps.current.outputs.CURRENT_BRANCH }}
+        secondaryBranch=rc/${{env.TAG}}
 
-    #     commitDiffCount=''
-    #     baseBranchPath=$(git branch -r | grep "$baseBranch" | xargs)
-    #     secondaryBranchPath=$(git branch -r | grep "$secondaryBranch" | xargs)
-    #     commitDiffCount=$(git log --oneline "$secondaryBranchPath" \^"$baseBranchPath" | wc -l)
+        commitDiffCount=''
+        baseBranchPath=$(git branch -r | grep "$baseBranch" | xargs)
+        secondaryBranchPath=$(git branch -r | grep "$secondaryBranch" | xargs)
+        commitDiffCount=$(git log --oneline "$secondaryBranchPath" \^"$baseBranchPath" | wc -l)
         
-    #     if [[ "$commitDiffCount" -eq 0 ]]; then
+        if [[ "$commitDiffCount" -eq 0 ]]; then
         
-    #       echo "------------  NOTHING TO MERGE  ------------"
+          echo "------------  NOTHING TO MERGE  ------------"
         
-    #     else
+        else
           
-    #       echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{env.TAG}}.  ------------"
-    #       gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
+          echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{env.TAG}}.  ------------"
+          gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
         
-    #     fi
+        fi
       
-    #   shell: bash
+      shell: bash
 
-    # - if: steps.check-branch-exists.outputs.exists == 'false'
-    #   run: |
-    #     echo "New Release Candidate is rc/${{env.TAG}}"
-    #     git checkout main || echo
-    #     git checkout -b rc/${{env.TAG}} || echo
-    #     git push --set-upstream origin rc/${{env.TAG}} || echo
+    - if: steps.check-branch-exists.outputs.exists == 'false'
+      run: |
+        echo "New Release Candidate is rc/${{env.TAG}}"
+        git checkout main || echo
+        git checkout -b rc/${{env.TAG}} || echo
+        git push --set-upstream origin rc/${{env.TAG}} || echo
         
-    #     gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
+        gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
 
-    #   shell: bash
+      shell: bash
