@@ -28,24 +28,31 @@ runs:
         echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
       shell: bash
 
-    - if: ${{ inputs.ORIGIN }} == 'fc'
-      name: bump
-      uses: anothrNick/github-tag-action@1.61.0
-      env:
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
-        DEFAULT_BUMP: "#minor"
+    - name: test
+      run: |
+        wget -O /usr/local/bin/semver https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver
+        chmod +x /usr/local/bin/semver
+        semver --version
+      shell: bash
+      
+    # - if: ${{ inputs.ORIGIN }} == 'fc'
+    #   name: bump
+    #   uses: anothrNick/github-tag-action@1.61.0
+    #   env:
+    #     GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+    #     DEFAULT_BUMP: "#minor"
 
-    - if: ${{ inputs.ORIGIN }} == 'fix'
-      name: bump
-      uses: anothrNick/github-tag-action@1.61.0
-      env:
-        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
-        DEFAULT_BUMP: "#patch"
+    # - if: ${{ inputs.ORIGIN }} == 'fix'
+    #   name: bump
+    #   uses: anothrNick/github-tag-action@1.61.0
+    #   env:
+    #     GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+    #     DEFAULT_BUMP: "#patch"
     
-    - id: check-branch-exists
-      uses: GuillaumeFalourd/branch-exists@v1
-      with:
-        branch: $(git describe --tags $(git rev-list --tags --max-count=1))
+    # - id: check-branch-exists
+    #   uses: GuillaumeFalourd/branch-exists@v1
+    #   with:
+    #     branch: $(git describe --tags $(git rev-list --tags --max-count=1))
         # branch: ${{env.TAG}}
 
     # - if: steps.check-branch-exists.outputs.exists == 'true'
