@@ -6,12 +6,9 @@ inputs:
   ORIGIN:
     required: true
     description: Origem
-  SERVICE:
+  GITHUB_TOKEN:
     required: true
-    description: Service
-  SERVICE_ACCOUNT_CREDENTIALS:
-    required: true
-    description: Service account credentials
+    description: GITHUB_TOKEN
 
 runs:
   using: "composite"
@@ -35,7 +32,7 @@ runs:
       name: bump
       uses: anothrNick/github-tag-action@1.61.0
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         WITH_V: "true"
         DEFAULT_BUMP: "minor"
 
@@ -43,7 +40,7 @@ runs:
       name: bump
       uses: anothrNick/github-tag-action@1.61.0
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         WITH_V: "true"
         DEFAULT_BUMP: "patch"
 
