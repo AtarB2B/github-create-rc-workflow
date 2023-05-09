@@ -42,10 +42,11 @@ runs:
         GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
         DEFAULT_BUMP: "#patch"
     
-    # - id: check-branch-exists
-    #   uses: GuillaumeFalourd/branch-exists@v1
-    #   with:
-    #     branch: ${{env.TAG}}
+    - id: check-branch-exists
+      uses: GuillaumeFalourd/branch-exists@v1
+      with:
+        branch: $(git describe --tags $(git rev-list --tags --max-count=1))
+        # branch: ${{env.TAG}}
 
     # - if: steps.check-branch-exists.outputs.exists == 'true'
     #   run: |        
