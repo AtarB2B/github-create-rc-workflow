@@ -21,7 +21,7 @@ runs:
 
     - name: Change Owner of Container Working Directory
       run: chown -R $(id -u):$(id -g) $PWD
-      
+      shell: bash
 
     - name: Check Current Branch
       id: current
