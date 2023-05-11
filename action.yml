@@ -61,9 +61,24 @@ runs:
 
     - if: steps.check-branch-exists.outputs.exists == 'true'
       run: |        
-        echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{env.TAG}}.  ------------"
-        gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC" 2>&1
-      
+        baseBranch=${{ steps.current.outputs.CURRENT_BRANCH }}
+        secondaryBranch=rc/${{env.TAG}}
+
+        commitDiffCount=''
+        baseBranchPath=$(git branch -r | grep "$baseBranch" | xargs)
+        secondaryBranchPath=$(git branch -r | grep "$secondaryBranch" | xargs)
+        commitDiffCount=$(git log --oneline "$secondaryBranchPath" \^"$baseBranchPath" | wc -l)
+        
+        if [[ "$commitDiffCount" -eq 0 ]]; then
+        
+          echo "------------  NOTHING TO MERGE  ------------"
+        
+        else
+
+          echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{env.TAG}}.  ------------"
+          gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"      
+
+        fi
       shell: bash
 
     - if: steps.check-branch-exists.outputs.exists == 'false'
