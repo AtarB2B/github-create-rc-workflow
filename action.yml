@@ -72,7 +72,7 @@ runs:
         
           echo "------------  FEATURE CANDIDATE - RC  ------------"
           echo "New Release Candidate is rc/${{env.TAG}}"
-          git checkout origin main || echo
+          git checkout origin/main || echo
           git checkout -b rc/${{env.TAG}} || echo
           git push --set-upstream origin rc/${{env.TAG}} || echo
           gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
@@ -80,7 +80,7 @@ runs:
         else
           echo "------------  HOTFIX - RC  ------------"
           echo "New Release Candidate is rc/${{env.TAG}}"
-          git checkout origin main || echo
+          git checkout origin/main || echo
           git checkout -b rc/${{env.TAG}} || echo
           git push --set-upstream origin rc/${{env.TAG}} || echo
 
