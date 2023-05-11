@@ -62,7 +62,7 @@ runs:
     - if: steps.check-branch-exists.outputs.exists == 'true'
       run: |        
         echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{env.TAG}}.  ------------"
-        gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
+        gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC" 2>&1
       
       shell: bash
 
