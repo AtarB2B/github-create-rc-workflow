@@ -23,7 +23,8 @@ runs:
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
         echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
-        echo "TAG=$(git tag | sort -V | tail -1)" >> $GITHUB_ENV
+        VERSION=$(git tag | sort -V | tail -1)
+        echo "TAG=$VERSION" >> $GITHUB_ENV
       shell: bash
 
     - name: Install semver
