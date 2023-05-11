@@ -26,7 +26,7 @@ runs:
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
         echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
-        echo "TAG=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_OUTPUT
+        echo "TAG=$(git describe --tags $(git rev-list --tags --max-count=1))" >> $GITHUB_ENV
       shell: bash
 
     - name: Install semver
@@ -40,7 +40,7 @@ runs:
       run: |
         if [[ ${{ inputs.ORIGIN }} == 'fc' ]]; then
           echo "------------  FEATURE CANDIDATE - RC  ------------"
-          echo "TAG=v$(semver bump minor ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
+          echo "TAG=v$(semver bump minor $TAG)" >> $GITHUB_ENV
         else
           echo "------------  HOTFIX - RC  ------------"
           echo "TAG=v$(semver bump patch ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
