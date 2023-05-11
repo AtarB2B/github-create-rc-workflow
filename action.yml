@@ -19,6 +19,8 @@ runs:
 
     - uses: actions-ecosystem/action-get-latest-tag@v1
       id: get-latest-tag
+      with:
+        initial_version: false
 
     - name: Check Current Branch
       id: current
