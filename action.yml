@@ -39,17 +39,11 @@ runs:
     - name: Valid Origin
       run: |
         if [[ ${{ inputs.ORIGIN }} == 'fc' ]]; then
-        
           echo "------------  FEATURE CANDIDATE - RC  ------------"
           echo "TAG=v$(semver bump minor ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
-          echo "RC_BRANCH=$TAG" >> $GITHUB_OUTPUT
-        
         else
-          
           echo "------------  HOTFIX - RC  ------------"
           echo "TAG=v$(semver bump patch ${{ steps.current.outputs.TAG }})" >> $GITHUB_ENV
-          echo "RC_BRANCH=$TAG" >> $GITHUB_OUTPUT
-          
         fi
       shell: bash
     
