@@ -17,19 +17,13 @@ runs:
       run: chown -R $(id -u):$(id -g) $PWD
       shell: bash
 
-    - uses: actions-ecosystem/action-get-latest-tag@v1
-      id: get-latest-tag
-      with:
-        semver_only: true
-        with_initial_version: false
-
     - name: Check Current Branch
       id: current
       run: |
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
         echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
-        echo "TAG=${{ steps.get-latest-tag.outputs.tag }}" >> $GITHUB_ENV
+        echo "TAG=$(git tag | sort -V | tail -1)" >> $GITHUB_ENV
       shell: bash
 
     - name: Install semver
