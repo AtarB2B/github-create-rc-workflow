@@ -2,6 +2,14 @@ name: Create Release Candidate
 
 description: Create Release Candidate
 
+inputs:
+  ORIGIN:
+    required: true
+    description: Origem
+  GITHUB_TOKEN:
+    required: true
+    description: GITHUB_TOKEN
+
 runs:
   using: "composite"
   steps:
@@ -12,54 +20,72 @@ runs:
       run: chown -R $(id -u):$(id -g) $PWD
       shell: bash
 
+    - name: Get latest release
+      id: latest_release
+      uses: kaliber5/action-get-release@v1
+      with:
+        token: ${{ inputs.GITHUB_TOKEN }}
+        latest: true
+
     - name: Check Current Branch
       id: current
       run: |
         git config user.name "GitHub Actions Bot"
         git config user.email "devops@atarb2b.com"
         echo "CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
+        VERSION=${{ steps.latest_release.outputs.tag_name }}
+        echo "TAG=$VERSION" >> $GITHUB_ENV
       shell: bash
 
-    - name: Check version
-      id: versioning
-      uses: AtarB2B/github-semantic-versioning-actions@main
+    - name: Install semver
+      run: |
+        wget -O /usr/local/bin/semver https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver
+        chmod +x /usr/local/bin/semver
+      shell: bash
 
+    - name: Valid Origin
+      run: |
+        if [[ ${{ inputs.ORIGIN }} == 'fc' ]]; then
+          echo "------------  FEATURE CANDIDATE - RC  ------------"
+          echo "TAG=v$(semver bump minor ${{env.TAG}})" >> $GITHUB_ENV
+        else
+          echo "------------  HOTFIX - RC  ------------"
+          echo "TAG=v$(semver bump patch ${{env.TAG}})" >> $GITHUB_ENV
+        fi
+      shell: bash
+    
     - id: check-branch-exists
       uses: GuillaumeFalourd/branch-exists@v1
       with:
-        branch: ${{ steps.versioning.outputs.version }}
+        branch: ${{env.TAG}}
 
     - if: steps.check-branch-exists.outputs.exists == 'true'
-      run: |        
-        
-        baseBranch=${{ steps.current.outputs.CURRENT_BRANCH }}
-        secondaryBranch=rc/${{ steps.versioning.outputs.version }}
-
-        commitDiffCount=''
-        baseBranchPath=$(git branch -r | grep "$baseBranch" | xargs)
-        secondaryBranchPath=$(git branch -r | grep "$secondaryBranch" | xargs)
-        commitDiffCount=$(git log --oneline "$secondaryBranchPath" \^"$baseBranchPath" | wc -l)
-        
-        if [[ "$commitDiffCount" -eq 0 ]]; then
-        
-          echo "------------  NOTHING TO MERGE  ------------"
-        
-        else
-          
-          echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{ steps.versioning.outputs.version }}.  ------------"
-          gh pr create --base=rc/${{ steps.versioning.outputs.version }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.versioning.outputs.version }} " --body="Pull Request FC to RC"
-        
-        fi
-      
+      run: |
+        echo "------------  Open PR from ${{ steps.current.outputs.CURRENT_BRANCH }} to ${{env.TAG}}.  ------------"
+        gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"      
       shell: bash
 
     - if: steps.check-branch-exists.outputs.exists == 'false'
       run: |
-        echo "New Release Candidate is rc/${{ steps.versioning.outputs.version }}"
-        git checkout main || echo
-        git checkout -b rc/${{ steps.versioning.outputs.version }} || echo
-        git push --set-upstream origin rc/${{ steps.versioning.outputs.version }} || echo
         
-        gh pr create --base=rc/${{ steps.versioning.outputs.version }} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{ steps.versioning.outputs.version }} " --body="Pull Request FC to RC"
+        if [[ ${{ inputs.ORIGIN }} == 'fc' ]]; then
+        
+          echo "------------  FEATURE CANDIDATE - RC  ------------"
+          echo "New Release Candidate is rc/${{env.TAG}}"
+          git fetch origin
+          git checkout main || echo
+          git checkout -b rc/${{env.TAG}} || echo
+          git push --set-upstream origin rc/${{env.TAG}} || echo
+          gh pr create --base=rc/${{env.TAG}} --head=${{ steps.current.outputs.CURRENT_BRANCH }} --title="[FC] branch ${{ steps.current.outputs.CURRENT_BRANCH }} to RC/${{env.TAG}} " --body="Pull Request FC to RC"
+        
+        else
+          echo "------------  HOTFIX - RC  ------------"
+          echo "New Release Candidate is rc/${{env.TAG}}"
+          git fetch origin
+          git checkout main || echo
+          git checkout -b rc/${{env.TAG}} || echo
+          git push --set-upstream origin rc/${{env.TAG}} || echo
+
+        fi
 
       shell: bash
