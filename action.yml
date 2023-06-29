@@ -95,7 +95,7 @@ runs:
       with:
         tag_name: ${{env.TAG}}
         release_name: Release ${{env.TAG}}
-        commitish: ${{env.TAG}}
+        # commitish: ${{env.TAG}}
         body: |
           Changes in this Release
           - Release from: rc/${{env.TAG}}
