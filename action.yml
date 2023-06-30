@@ -106,7 +106,7 @@ runs:
 
     - name: Create GH Release
       if: ${{ inputs.ORIGIN == 'hotfix' }}
-      id: create_release
+      id: create_release_hotfix
       uses: actions/create-release@v1
       with:
         tag_name: ${{env.TAG}}
