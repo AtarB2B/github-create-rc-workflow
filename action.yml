@@ -117,5 +117,5 @@ runs:
           - Hotfix date: ${{env.CURRENT_DATE}}
           - Commit: ${{github.sha}}
         draft: false
-        prerelease: false
+        prerelease: true
 
