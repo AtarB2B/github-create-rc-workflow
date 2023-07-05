@@ -116,6 +116,6 @@ runs:
           - Hotfix from: rc/${{env.TAG}}
           - Hotfix date: ${{env.CURRENT_DATE}}
           - Commit: ${{github.sha}}
-        draft: true
+        draft: false
         prerelease: false
 
